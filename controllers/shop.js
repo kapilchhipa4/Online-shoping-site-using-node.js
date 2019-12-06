@@ -1,12 +1,14 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
+ const isLoggedIn = req.session.isLoggedIn;
   Product.fetchAll()
     .then(products => {
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
-        path: '/products'
+        path: '/products',
+        isAuthenticated: isLoggedIn
       });
     })
     .catch(err => {
@@ -16,6 +18,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
+  const isLoggedIn = req.session.isLoggedIn;
   // Product.findAll({ where: { id: prodId } })
   //   .then(products => {
   //     res.render('shop/product-detail', {
@@ -30,19 +33,24 @@ exports.getProduct = (req, res, next) => {
       res.render('shop/product-detail', {
         product: product,
         pageTitle: product.title,
-        path: '/products'
+        path: '/products',
+        isAuthenticated: isLoggedIn
       });
     })
     .catch(err => console.log(err));
 };
 
 exports.getIndex = (req, res, next) => {
+
+ const isLoggedIn = req.session.isLoggedIn;
   Product.fetchAll()
     .then(products => {
       res.render('shop/index', {
         prods: products,
         pageTitle: 'Shop',
-        path: '/'
+        path: '/',
+        isAuthenticated: isLoggedIn
+
       });
     })
     .catch(err => {
@@ -51,19 +59,23 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
+ const isLoggedIn = req.session.isLoggedIn;
   req.user
     .getCart()
     .then(products => {
       res.render('shop/cart', {
         path: '/cart',
         pageTitle: 'Your Cart',
-        products: products
+        products: products,
+        isAuthenticated: isLoggedIn
       });
     })
     .catch(err => console.log(err));
 };
 
 exports.postCart = (req, res, next) => {
+
+
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then(product => {
@@ -96,13 +108,15 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
+const isLoggedIn = req.session.isLoggedIn;
   req.user
     .getOrders()
     .then(orders => {
       res.render('shop/orders', {
         path: '/orders',
         pageTitle: 'Your Orders',
-        orders: orders
+        orders: orders,
+        isAuthenticated: isLoggedIn
       });
     })
     .catch(err => console.log(err));
